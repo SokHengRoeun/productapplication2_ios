@@ -114,20 +114,17 @@ class HengCryptology {
     }
     // Encrypt Message with Public Key
     func encryptMessage(yourMessage: String) -> String {
-        var publicKey = requestCertificate().0
-        let str = yourMessage
-        let clear = try! ClearMessage(string: str, using: .utf32)
+        let publicKey = requestCertificate().0
+        let clear = try! ClearMessage(string: yourMessage, using: .utf32)
         let encrypted = try! clear.encrypted(with: publicKey, padding: .PKCS1)
-        let base64String = encrypted.base64String
-        return base64String
+        return encrypted.base64String
     }
     // Decrypt Message back to original form
     func decryptMessage(yourMessage: String) -> String {
-        var privateKey = requestCertificate().1
+        let privateKey = requestCertificate().1
         let encrypted = try! EncryptedMessage(base64Encoded: yourMessage)
         let clear = try! encrypted.decrypted(with: privateKey, padding: .PKCS1)
-        let string = try! clear.string(encoding: .utf32)
-        return string
+        return try! clear.string(encoding: .utf32)
     }
 }
 
