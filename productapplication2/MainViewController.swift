@@ -11,6 +11,7 @@ import UIKit
 struct DisplayProduct {
     var name: String
     var category: String
+    var personalIndex: Int
 }
 
 class MainViewController: UIViewController {
@@ -94,8 +95,14 @@ extension MainViewController: UITableViewDelegate,
                    commit editingStyle: UITableViewCell.EditingStyle,
                    forRowAt indexPath: IndexPath
     ) {
-        if !isSearching {
-            if editingStyle == .delete {
+        if editingStyle == .delete {
+            if isSearching {
+                let product = coreDM.getAllProduct()[filteredProduct[indexPath.item].personalIndex]
+                allProducts.remove(at: filteredProduct[indexPath.item].personalIndex)
+                filteredProduct.remove(at: indexPath.item)
+                coreDM.deleteProduct(theProduct: product)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            } else {
                 let product = coreDM.getAllProduct()[indexPath.item]
                 allProducts.remove(at: indexPath.item)
                 coreDM.deleteProduct(theProduct: product)
@@ -105,7 +112,11 @@ extension MainViewController: UITableViewDelegate,
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let addScreen = AddAndEditViewController()
-        addScreen.tempProduct = coreDM.getAllProduct()[indexPath.row]
+        if isSearching {
+            addScreen.tempProduct = coreDM.getAllProduct()[filteredProduct[indexPath.item].personalIndex]
+        } else {
+            addScreen.tempProduct = coreDM.getAllProduct()[indexPath.row]
+        }
         addScreen.isEditingProduct = true
         navigationController?.pushViewController(addScreen, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)

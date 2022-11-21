@@ -81,7 +81,7 @@ class HengBase64Encoding {
 // swiftlint:disable force_try
 class HengCryptology {
     // Create or pass authendication certificate to another function
-    private func requestCertificate() -> (PublicKey, PrivateKey) {
+    private func locateCertificate() -> (PublicKey, PrivateKey) {
         let fileDirectoryURL = try! FileManager.default.url(for: .documentDirectory,
                                                             in: .userDomainMask,
                                                             appropriateFor: nil,
@@ -114,30 +114,32 @@ class HengCryptology {
     }
     // Encrypt Message with Public Key
     func encryptMessage(yourMessage: String) -> String {
-        let publicKey = requestCertificate().0
+        let publicKey = locateCertificate().0
         let clear = try! ClearMessage(string: yourMessage, using: .utf32)
         let encrypted = try! clear.encrypted(with: publicKey, padding: .PKCS1)
         return encrypted.base64String
     }
     // Decrypt Message back to original form
     func decryptMessage(yourMessage: String) -> String {
-        let privateKey = requestCertificate().1
+        let privateKey = locateCertificate().1
         let encrypted = try! EncryptedMessage(base64Encoded: yourMessage)
         let clear = try! encrypted.decrypted(with: privateKey, padding: .PKCS1)
         return try! clear.string(encoding: .utf32)
     }
     func decryptAllProduct() -> [DisplayProduct] {
         let everyProduct = CoreDataManager().getAllProduct()
-        let privateKey = requestCertificate().1
+        let privateKey = locateCertificate().1
         var products = [DisplayProduct]()
+        var indexx = 0
         for eachProduct in everyProduct {
+            indexx += 1
             let encryptedName = try! EncryptedMessage(base64Encoded: eachProduct.name!)
             let clearName = try! encryptedName.decrypted(with: privateKey, padding: .PKCS1)
             let encryptedCategory = try! EncryptedMessage(base64Encoded: eachProduct.category!)
             let clearCategory = try! encryptedCategory.decrypted(with: privateKey, padding: .PKCS1)
             let name = try! clearName.string(encoding: .utf32)
             let category = try! clearCategory.string(encoding: .utf32)
-            products.append(DisplayProduct(name: name, category: category))
+            products.append(DisplayProduct(name: name, category: category, personalIndex: indexx - 1))
         }
         return products
     }
