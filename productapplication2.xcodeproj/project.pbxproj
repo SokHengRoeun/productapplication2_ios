@@ -81,12 +81,12 @@
 		8433DC8429272B2E00A50619 /* productapplication2 */ = {
 			isa = PBXGroup;
 			children = (
+				8433DCA129272C9000A50619 /* MainTableCell.swift */,
 				8433DC8529272B2E00A50619 /* AppDelegate.swift */,
 				8433DC8729272B2E00A50619 /* SceneDelegate.swift */,
 				8433DC8929272B2E00A50619 /* MainViewController.swift */,
 				8433DC9D29272C1100A50619 /* AddAndEditViewController.swift */,
 				8433DC9F29272C3600A50619 /* CoreDataManager.swift */,
-				8433DCA129272C9000A50619 /* MainTableCell.swift */,
 				8433DCA329272CAE00A50619 /* sokheng_extension_pack.swift */,
 				8433DC8B29272B2E00A50619 /* Main.storyboard */,
 				8433DC9129272B3000A50619 /* Assets.xcassets */,
@@ -103,7 +103,6 @@
 				2F07BF4358C0412F0498E3FF /* Pods-productapplication2.debug.xcconfig */,
 				2C5A5D914DC1EC878EFE33F9 /* Pods-productapplication2.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

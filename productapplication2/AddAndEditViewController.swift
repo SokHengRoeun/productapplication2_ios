@@ -12,7 +12,7 @@ class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, U
     var tempProduct = Product()
     var isEditingProduct = false
     let coreDM = CoreDataManager.shared
-    var tap = UITapGestureRecognizer()
+    var tapTapRecogn = UITapGestureRecognizer()
     var inputContainerStack: UIStackView = {
         let myStack = UIStackView()
         myStack.axis = .vertical
@@ -71,9 +71,9 @@ class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, U
         saveButton.addTarget(self, action: #selector(saveButtonOnclick), for: .touchUpInside)
         productNameInputfield.delegate = self
         productCategoryInputfield.delegate = self
-        tap.delegate = self
-        view.addGestureRecognizer(tap)
-        tap.addTarget(self, action: #selector(taptapAction))
+        tapTapRecogn.delegate = self
+        view.addGestureRecognizer(tapTapRecogn)
+        tapTapRecogn.addTarget(self, action: #selector(taptapAction))
         configureConstraints()
         initializeIfEditng()
     }

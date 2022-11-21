@@ -126,6 +126,21 @@ class HengCryptology {
         let clear = try! encrypted.decrypted(with: privateKey, padding: .PKCS1)
         return try! clear.string(encoding: .utf32)
     }
+    func decryptAllProduct() -> [DisplayProduct] {
+        let everyProduct = CoreDataManager().getAllProduct()
+        let privateKey = requestCertificate().1
+        var products = [DisplayProduct]()
+        for eachProduct in everyProduct {
+            let encryptedName = try! EncryptedMessage(base64Encoded: eachProduct.name!)
+            let clearName = try! encryptedName.decrypted(with: privateKey, padding: .PKCS1)
+            let encryptedCategory = try! EncryptedMessage(base64Encoded: eachProduct.category!)
+            let clearCategory = try! encryptedCategory.decrypted(with: privateKey, padding: .PKCS1)
+            let name = try! clearName.string(encoding: .utf32)
+            let category = try! clearCategory.string(encoding: .utf32)
+            products.append(DisplayProduct(name: name, category: category))
+        }
+        return products
+    }
 }
 
 extension UIView {
