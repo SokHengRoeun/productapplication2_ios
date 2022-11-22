@@ -47,16 +47,16 @@ extension UIViewController {
                                          message: message,
                                          preferredStyle: .alert
         )
-        let yesActions = UIAlertAction(title: firstButtonText,
+        let firstAlertAction = UIAlertAction(title: firstButtonText,
                                        style: firstButtonStyle,
                                        handler: firstButtonAction
         )
-        alertBox.addAction(yesActions)
-        let cancelActions = UIAlertAction(title: secondButtonText,
+        alertBox.addAction(firstAlertAction)
+        let secondAlertAction = UIAlertAction(title: secondButtonText,
                                           style: secondButtonStyle,
                                           handler: secondButtonAction
         )
-        alertBox.addAction(cancelActions)
+        alertBox.addAction(secondAlertAction)
         DispatchQueue.main.async {
             self.present(alertBox,
                          animated: true,

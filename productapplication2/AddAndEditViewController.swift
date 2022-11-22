@@ -7,11 +7,20 @@
 
 import UIKit
 
+struct PassBackObj {
+    var theProduct = DisplayProduct(name: "", category: "", personalIndex: 0)
+    var theIndex = Int()
+}
+
 class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, UITextFieldDelegate {
     let encryptionProtocal = HengCryptology()
-    var tempProduct = Product()
+    lazy var editProduct = Product()
+    lazy var newProduct = DisplayProduct(name: "", category: "", personalIndex: 0)
+    var totalProductAmount = Int()
     var isEditingProduct = false
+    var editInIndex = Int()
     let coreDM = CoreDataManager.shared
+    var returnObj = PassBackObj()
     var tapTapRecogn = UITapGestureRecognizer()
     var inputContainerStack: UIStackView = {
         let myStack = UIStackView()
@@ -79,12 +88,14 @@ class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, U
     }
     func initializeIfEditng() {
         if isEditingProduct {
-            productNameInputfield.text! = encryptionProtocal.decryptMessage(yourMessage: tempProduct.name!)
-            productCategoryInputfield.text! = encryptionProtocal.decryptMessage(yourMessage: tempProduct.category!)
+            productNameInputfield.text! = encryptionProtocal.decryptMessage(yourMessage: editProduct.name!)
+            productCategoryInputfield.text! = encryptionProtocal.decryptMessage(yourMessage: editProduct.category!)
+            let addNavButton = UIBarButtonItem(barButtonSystemItem: .trash,
+                                               target: self,
+                                               action: #selector(deleteButtonOnclick)
+            )
+            navigationItem.rightBarButtonItem = addNavButton
         }
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "CallBack"), object: self))
     }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
@@ -154,30 +165,44 @@ class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, U
     @objc func taptapAction() {
         view.endEditing(true)
     }
+    @objc func deleteButtonOnclick() {
+        coreDM.deleteProduct(theProduct: editProduct)
+        returnObj.theIndex = editInIndex
+        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "deleteProduct"),
+                                                     object: returnObj))
+        dismissNavigationView()
+    }
     @objc func saveButtonOnclick() {
         let totalInputValue = productNameInputfield.text! + productCategoryInputfield.text!
         let encryptedProductName = encryptionProtocal.encryptMessage(yourMessage: productNameInputfield.text!)
         let encryptedProductCategory = encryptionProtocal.encryptMessage(yourMessage: productCategoryInputfield.text!)
         if hasValueInInputfield() {
             if !hasOverLimitCharacter() {
-                if isEditingProduct {
-                    if hasSpecialCharacter(theString: totalInputValue) == false {
-                        tempProduct.name = encryptedProductName
-                        tempProduct.category = encryptedProductCategory
-                        coreDM.updateProduct(theProduct: tempProduct)
+                if hasSpecialCharacter(theString: totalInputValue) == false {
+                    if isEditingProduct {
+                        editProduct.name = encryptedProductName
+                        editProduct.category = encryptedProductCategory
+                        coreDM.updateProduct(theProduct: editProduct)
+                        returnObj.theIndex = editInIndex
+                        returnObj.theProduct.name = productNameInputfield.text!
+                        returnObj.theProduct.category = productCategoryInputfield.text!
+                        returnObj.theProduct.personalIndex = editInIndex
+                        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "productUpdate"),
+                                                                     object: returnObj))
                         dismissNavigationView()
                     } else {
-                        alertSpecialError()
-                    }
-                } else {
-                    if hasSpecialCharacter(theString: totalInputValue) == false {
                         coreDM.createProduct(productName: encryptedProductName,
                                              productCategory: encryptedProductCategory
                         )
+                        newProduct.name = productNameInputfield.text!
+                        newProduct.category = productCategoryInputfield.text!
+                        newProduct.personalIndex = totalProductAmount
+                        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "addedProduct"),
+                                                                     object: newProduct))
                         dismissNavigationView()
-                    } else {
-                        alertSpecialError()
                     }
+                } else {
+                    alertSpecialError()
                 }
             } else {
                 alertLimitError()
