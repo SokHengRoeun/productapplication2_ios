@@ -14,8 +14,8 @@ struct PassBackObj {
 
 class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, UITextFieldDelegate {
     let encryptionProtocal = HengCryptology()
-    lazy var editProduct = Product()
-    lazy var newProduct = DisplayProduct(name: "", category: "", personalIndex: 0)
+    var editProduct = Product()
+    var newProduct = DisplayProduct(name: "", category: "", personalIndex: 0)
     var totalProductAmount = Int()
     var isEditingProduct = false
     var editInIndex = Int()
@@ -166,11 +166,22 @@ class AddAndEditViewController: UIViewController, UIGestureRecognizerDelegate, U
         view.endEditing(true)
     }
     @objc func deleteButtonOnclick() {
-        coreDM.deleteProduct(theProduct: editProduct)
-        returnObj.theIndex = editInIndex
-        NotificationCenter.default.post(Notification(name: Notification.Name(rawValue: "deleteProduct"),
-                                                     object: returnObj))
-        dismissNavigationView()
+        showAlertBox(title: "Are you sure?",
+                     message: "You are about to delete this product.",
+                     firstButtonAction: nil,
+                     firstButtonText: "Cancel",
+                     firstButtonStyle: .cancel,
+                     secondButtonAction: {_ in
+                        self.coreDM.deleteProduct(theProduct: self.editProduct)
+                        self.returnObj.theIndex = self.editInIndex
+                        NotificationCenter.default.post(Notification(
+                            name: Notification.Name(rawValue: "deleteProduct"),
+                            object: self.returnObj)
+                        )
+                        self.dismissNavigationView()
+                    },
+                     secondButtonText: "Delete",
+                     secondButtonStyle: .destructive)
     }
     @objc func saveButtonOnclick() {
         let totalInputValue = productNameInputfield.text! + productCategoryInputfield.text!

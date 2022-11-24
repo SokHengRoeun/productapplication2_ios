@@ -144,7 +144,7 @@ extension MainViewController: UITableViewDelegate,
     @objc func editOldProduct(_ notification: NSNotification) {
         let returnedObj = notification.object as! PassBackObj
         allProducts[returnedObj.theIndex] = returnedObj.theProduct
-        // self.tableViewReloadData()
+        self.tableViewReloadData()
     }
     @objc func deleteOldProduct(_ notification: NSNotification) {
         let returnedObj = notification.object as! PassBackObj
